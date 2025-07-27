@@ -1,0 +1,60 @@
+local module = {}
+
+local runS = game:GetService("RunService")
+	local repS = game:GetService("ReplicatedStorage")
+
+local Assets = repS.AssetsOcean
+
+module.CalculatePOS = function(chunk, seasize)
+	local parts = string.split(chunk, " ")
+
+	local x = parts[1]
+	local z = parts[2]
+	
+	x = tonumber(x)
+	z = tonumber(z)
+	
+	if x < 0 then
+		x = (x*seasize+seasize/2)
+	else
+		x = ((x+1)*seasize-seasize/2)
+	end
+	
+	if z < 0 then
+		z = (z*seasize+seasize/2)
+	else
+		z = ((z+1)*seasize-seasize/2)
+	end
+	
+	local chunkPos = Vector3.new(x, workspace.Ocean.Levels.OceanLevel.Value.Y, z)
+	
+	return chunkPos
+end
+
+module.GroundGen = function(pos, groundlevel, chunkfolder, chunk)
+	if chunkfolder:FindFirstChild("Ground") then
+		local Ground = Assets.Mesh.GroundPart:Clone()
+		Ground.Parent = chunkfolder:FindFirstChild("Ground")
+		Ground.Name = "Ground"
+
+		local x = pos.X
+		local z = pos.Z
+		local y = groundlevel.Value.Y - Ground.Size.Y/2
+
+		Ground.Position = Vector3.new(x, y, z)
+	else
+		local Folder = Instance.new("Folder", chunkfolder)
+		Folder.Name = "Ground"
+		local Ground = Assets.Mesh.GroundPart:Clone()
+		Ground.Parent = Folder
+		Ground.Name = "Ground"
+
+		local x = pos.X
+		local z = pos.Z
+		local y = groundlevel.Value.Y - Ground.Size.Y/2
+
+		Ground.Position = Vector3.new(x, y, z)
+	end
+end
+
+return module
